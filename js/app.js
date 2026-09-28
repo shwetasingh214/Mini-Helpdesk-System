@@ -14,7 +14,8 @@ if (taskForm) {
         event.preventDefault();
 
         // Get values from form
-        const title = document.getElementById("taskTitle").value;
+        const title =
+            document.getElementById("taskTitle").value;
 
         const description =
             document.getElementById("taskDescription").value;
@@ -25,21 +26,31 @@ if (taskForm) {
         const priority =
             document.getElementById("taskPriority").value;
 
+
         // Create task object
         const task = {
+
             id: Date.now(),
+
             title: title,
+
             description: description,
+
             status: status,
+
             priority: priority
+
         };
+
 
         // Get old tasks from localStorage
         let tasks =
             JSON.parse(localStorage.getItem("tasks")) || [];
 
+
         // Add new task
         tasks.push(task);
+
 
         // Save tasks in localStorage
         localStorage.setItem(
@@ -47,9 +58,12 @@ if (taskForm) {
             JSON.stringify(tasks)
         );
 
+
         // Go back to dashboard
         window.location.href = "dashboard.html";
+
     });
+
 }
 
 
@@ -58,62 +72,95 @@ if (taskForm) {
 // =========================
 
 // Get task list container
-const taskList = document.getElementById("taskList");
+const taskList =
+    document.getElementById("taskList");
+
 
 // If task list exists, we are on dashboard
 if (taskList) {
 
     displayTasks();
+
 }
 
 
-// Function to display tasks
+// =========================
+// DISPLAY TASKS
+// =========================
+
 function displayTasks() {
 
     // Get tasks from localStorage
     const tasks =
         JSON.parse(localStorage.getItem("tasks")) || [];
 
+
     // Clear old task list
     taskList.innerHTML = "";
+
 
     // If no tasks
     if (tasks.length === 0) {
 
         taskList.textContent = "No tasks available.";
 
+        updateDashboardCounts(tasks);
+
         return;
     }
+
 
     // Display every task
     tasks.forEach(function(task) {
 
+
         // Create task card
-        const taskCard = document.createElement("div");
+        const taskCard =
+            document.createElement("div");
 
         taskCard.className = "task-card";
 
-        // Task information
-        const taskContent = document.createElement("div");
 
-        const title = document.createElement("h3");
+        // =========================
+        // TASK INFORMATION
+        // =========================
+
+        const taskContent =
+            document.createElement("div");
+
+
+        // Title
+        const title =
+            document.createElement("h3");
+
         title.textContent = task.title;
 
-        const description = document.createElement("p");
+
+        // Description
+        const description =
+            document.createElement("p");
+
         description.textContent = task.description;
 
+
         taskContent.appendChild(title);
+
         taskContent.appendChild(description);
 
 
-        // Status and priority section
-        const taskInfo = document.createElement("div");
+        // =========================
+        // STATUS AND PRIORITY
+        // =========================
+
+        const taskInfo =
+            document.createElement("div");
 
         taskInfo.className = "task-info";
 
 
         // Status
-        const status = document.createElement("span");
+        const status =
+            document.createElement("span");
 
         status.className = "status";
 
@@ -121,7 +168,8 @@ function displayTasks() {
 
 
         // Priority
-        const priority = document.createElement("span");
+        const priority =
+            document.createElement("span");
 
         priority.className = "priority";
 
@@ -130,21 +178,56 @@ function displayTasks() {
 
         // Add status and priority
         taskInfo.appendChild(status);
+
         taskInfo.appendChild(priority);
 
 
-        // Add everything to task card
+        // =========================
+        // DELETE BUTTON
+        // =========================
+
+        const deleteButton =
+            document.createElement("button");
+
+
+        // Button text
+        deleteButton.textContent = "Delete";
+
+
+        // CSS class
+        deleteButton.className = "delete-btn";
+
+
+        // When button is clicked
+        deleteButton.addEventListener("click", function() {
+
+            deleteTask(task.id);
+
+        });
+
+
+        // Add Delete button
+        taskInfo.appendChild(deleteButton);
+
+
+        // =========================
+        // ADD EVERYTHING TO CARD
+        // =========================
+
         taskCard.appendChild(taskContent);
+
         taskCard.appendChild(taskInfo);
 
 
         // Add task card to dashboard
         taskList.appendChild(taskCard);
+
     });
 
 
     // Update dashboard counts
     updateDashboardCounts(tasks);
+
 }
 
 
@@ -154,17 +237,21 @@ function displayTasks() {
 
 function updateDashboardCounts(tasks) {
 
+
     // Total tasks
     const totalTasks =
         document.getElementById("totalTasks");
+
 
     // Open tasks
     const openTasks =
         document.getElementById("openTasks");
 
+
     // In Progress tasks
     const progressTasks =
         document.getElementById("progressTasks");
+
 
     // Completed tasks
     const completedTasks =
@@ -173,22 +260,33 @@ function updateDashboardCounts(tasks) {
 
     // Count tasks
     let open = 0;
+
     let progress = 0;
+
     let completed = 0;
 
 
     tasks.forEach(function(task) {
 
+
         if (task.status === "Open") {
+
             open++;
+
         }
+
 
         if (task.status === "In Progress") {
+
             progress++;
+
         }
 
+
         if (task.status === "Completed") {
+
             completed++;
+
         }
 
     });
@@ -196,7 +294,44 @@ function updateDashboardCounts(tasks) {
 
     // Show counts
     totalTasks.textContent = tasks.length;
+
     openTasks.textContent = open;
+
     progressTasks.textContent = progress;
+
     completedTasks.textContent = completed;
+
+}
+
+
+// =========================
+// DELETE TASK
+// =========================
+
+function deleteTask(id) {
+
+
+    // Get tasks from localStorage
+    let tasks =
+        JSON.parse(localStorage.getItem("tasks")) || [];
+
+
+    // Remove selected task
+    tasks = tasks.filter(function(task) {
+
+        return task.id !== id;
+
+    });
+
+
+    // Save updated tasks
+    localStorage.setItem(
+        "tasks",
+        JSON.stringify(tasks)
+    );
+
+
+    // Display updated tasks
+    displayTasks();
+
 }
